@@ -9,3 +9,6 @@
 3. The processing in 2 can be stopped when button#stop is clicked.
 4. When button#sort is clicked, rows will be sorted by price in descending order. If two or more prices are the same, rows will be sorted in ascending id order.
 
+## Example.
+
+![Alt text](/image/project-image.JPG?raw=true "project image")
