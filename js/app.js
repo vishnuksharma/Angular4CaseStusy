@@ -3,22 +3,22 @@ class App {
     this.tableData = TABLE_DATA;
     this.bindEvent();
     this.intervalObj;
-    this.asc1 = 1,
-    this.asc2 = 1,
-    this.asc3 = 1;
   }
   bindEvent (){
     document.getElementById("startRandomBtn").addEventListener('click', this.randomShuffleTableRow.bind(this));
     document.getElementById("stopRandomBtn").addEventListener('click', this.stopShuffleTableRow.bind(this));
-    // document.getElementById("sortRandomBtn").addEventListener('click', this.sort_table.bind(this));
 
+    for(let eachClass of document.getElementsByClassName("sortRandomBtn") ){
+      eachClass.addEventListener('click', this.sortTableRow.bind(this));
+    }
   }
 
   randomShuffleTableRow(){
+    console.info('Random Start');
     const tableId="content-data";
     const _self = this;
-    if (intervalObj){
-      clearInterval(intervalObj);
+    if (this.intervalObj){
+      clearInterval(this.intervalObj);
     }
     this.intervalObj = setInterval(function(){_self.randomize(tableId)},1000);
   }
@@ -55,6 +55,7 @@ class App {
 
   // stop random shuffling rows
   stopShuffleTableRow(){
+    console.info('Random Stop');
     // console.log(this.intervalObj, ">>>>>>>>>");
     if (this.intervalObj){
       clearInterval(this.intervalObj);
@@ -108,76 +109,107 @@ class App {
   }
 
   // Table column sort
-  sort_table(tbody, col=3, asc=1) {
-    let tbodySort = "content-data";
-    tbodySort = document.getElementById(tbodySort);
-      let rows = tbodySort.rows,
-          rlen = rows.length,
-          arr = new Array(),
-          cells, clen;
-      // fill the array with values from the table
-      for (let i = 0; i < rlen; i++) {
-          cells = rows[i].cells;
-          clen = cells.length;
-          arr[i] = new Array();
-          for (let j = 0; j < clen; j++) {
-              arr[i][j] = cells[j].innerHTML;
-          }
-      }
-      // sort the array by the specified column number (col) and order (asc)
-      arr.sort(function (a, b) {
+  sortTableRow(thiss) {
+    let n = (thiss.target.cellIndex+1)?thiss.target.cellIndex:3;
+    console.info('Sorting with column=>'+thiss.currentTarget.innerText+'=>Index:'+n);
+    let table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
+    table = document.getElementById("content-data");
+    switching = true;
+    //Set the sorting direction to ascending:
+    dir = "asc";
+    /*Make a loop that will continue until
+    no switching has been done:*/
+    while (switching) {
+      //start by saying: no switching is done:
+      switching = false;
+      rows = table.getElementsByTagName("TR");
+      /*Loop through all table rows (except the
+      first, which contains table headers):*/
 
-        let val1 = isNaN(parseInt(a[col])) ? a[col] : parseInt(a[col]);
-        let val2 = isNaN(parseInt(b[col])) ? b[col] : parseInt(b[col]);
-          // console.log(val1, val2);
-          return (val1 == val2) ? 0 : ((val1 > val2) ? asc : -1 * asc);
-      });
-      // replace existing rows with new rows created from the sorted array
-      for (let i = 0; i < rlen; i++) {
-          rows[i].innerHTML = "<td>" + arr[i].join("</td><td>") + "</td>";
+      for (i = 0; i < (rows.length - 1); i++) {
+        //start by saying there should be no switching:
+        shouldSwitch = false;
+        /*Get the two elements you want to compare,
+        one from current row and one from the next:*/
+        x = rows[i].getElementsByTagName("TD")[n];
+        y = rows[i + 1].getElementsByTagName("TD")[n];
+
+        let col1 = isNaN(parseInt(x.innerHTML)) ? x.innerHTML.toLowerCase() : parseInt(x.innerHTML);
+        let col2 = isNaN(parseInt(y.innerHTML)) ? y.innerHTML.toLowerCase() : parseInt(y.innerHTML);
+        // console.log(col1, col2);
+        /*check if the two rows should switch place,
+        based on the direction, asc or desc:*/
+        if (dir == "asc") {
+          if (col1 > col2) {
+            //if so, mark as a switch and break the loop:
+            shouldSwitch= true;
+            break;
+          }
+        } else if (dir == "desc") {
+          if (col1 < col2) {
+            //if so, mark as a switch and break the loop:
+            shouldSwitch= true;
+            break;
+          }
+        }
       }
+      if (shouldSwitch) {
+        /*If a switch has been marked, make the switch
+        and mark that a switch has been done:*/
+        rows[i].parentNode.insertBefore(rows[i + 1], rows[i]);
+        switching = true;
+        //Each time a switch is done, increase this count by 1:
+        switchcount ++;
+      } else {
+        /*If no switching has been done AND the direction is "asc",
+        set the direction to "desc" and run the while loop again.*/
+        if (switchcount == 0 && dir == "asc") {
+          dir = "desc";
+          switching = true;
+        }
+      }
+    }
   }
 }
 
-let  intervalObj;
 window.onload=function() {
   const appObj = new App();
   appObj.renderDataIntoTable();
 }
 
-let asc1 = 1,
-    asc2 = 1,
-    asc3 = 1;
-
-
-function sort_table(tbody, col, asc) {
-  tbody = document.getElementById(tbody);
-    let rows = tbody.rows,
-        rlen = rows.length,
-        arr = new Array(),
-        cells, clen;
-    // fill the array with values from the table
-    for (let i = 0; i < rlen; i++) {
-        cells = rows[i].cells;
-        clen = cells.length;
-        arr[i] = new Array();
-        for (let j = 0; j < clen; j++) {
-            arr[i][j] = cells[j].innerHTML;
-        }
-    }
-    // sort the array by the specified column number (col) and order (asc)
-    arr.sort(function (a, b) {
-
-      let val1 = isNaN(parseInt(a[col])) ? a[col] : parseInt(a[col]);
-      let val2 = isNaN(parseInt(b[col])) ? b[col] : parseInt(b[col]);
-        // console.log(val1, val2);
-        return (val1 == val2) ? 0 : ((val1 > val2) ? asc : -1 * asc);
-    });
-    // replace existing rows with new rows created from the sorted array
-    for (i = 0; i < rlen; i++) {
-        rows[i].innerHTML = "<td>" + arr[i].join("</td><td>") + "</td>";
-    }
-}
+// let asc1 = 1,
+//     asc2 = 1,
+//     asc3 = 1;
+//
+//
+// function sort_table(tbody, col, asc) {
+//   tbody = document.getElementById(tbody);
+//     let rows = tbody.rows,
+//         rlen = rows.length,
+//         arr = new Array(),
+//         cells, clen;
+//     // fill the array with values from the table
+//     for (let i = 0; i < rlen; i++) {
+//         cells = rows[i].cells;
+//         clen = cells.length;
+//         arr[i] = new Array();
+//         for (let j = 0; j < clen; j++) {
+//             arr[i][j] = cells[j].innerHTML;
+//         }
+//     }
+//     // sort the array by the specified column number (col) and order (asc)
+//     arr.sort(function (a, b) {
+//
+//       let val1 = isNaN(parseInt(a[col])) ? a[col] : parseInt(a[col]);
+//       let val2 = isNaN(parseInt(b[col])) ? b[col] : parseInt(b[col]);
+//         // console.log(val1, val2);
+//         return (val1 == val2) ? 0 : ((val1 > val2) ? asc : -1 * asc);
+//     });
+//     // replace existing rows with new rows created from the sorted array
+//     for (i = 0; i < rlen; i++) {
+//         rows[i].innerHTML = "<td>" + arr[i].join("</td><td>") + "</td>";
+//     }
+// }
 
 
 /* Random rows
