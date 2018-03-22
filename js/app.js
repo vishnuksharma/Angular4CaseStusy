@@ -111,7 +111,7 @@ class App {
   // Table column sort
   sortTableRow(thiss) {
     let n = (thiss.target.cellIndex+1)?thiss.target.cellIndex:3;
-    console.info('Sorting with column=>'+thiss.currentTarget.innerText+'=>Index:'+n);
+    
     let table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
     table = document.getElementById("content-data");
     switching = true;
@@ -169,6 +169,7 @@ class App {
         }
       }
     }
+    console.info('Sorting with column=>'+thiss.currentTarget.innerText+' '+dir+'=>Index:'+n);
   }
 }
 
