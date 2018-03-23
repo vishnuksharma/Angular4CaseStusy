@@ -111,28 +111,22 @@ class App {
   // Table column sort
   sortTableRow(thiss) {
     let n = (thiss.target.cellIndex+1)?thiss.target.cellIndex:3;
-    
+
     let table, rows, switching, i, x, y, shouldSwitch, dir, switchcount = 0;
     table = document.getElementById("content-data");
     switching = true;
     //Set the sorting direction to ascending:
     dir = "asc";
-    /*Make a loop that will continue until
-    no switching has been done:*/
     while (switching) {
-      //start by saying: no switching is done:
       switching = false;
-      rows = table.getElementsByTagName("TR");
-      /*Loop through all table rows (except the
-      first, which contains table headers):*/
+      rows = table.rows; //table.getElementsByTagName("TR");
 
       for (i = 0; i < (rows.length - 1); i++) {
         //start by saying there should be no switching:
         shouldSwitch = false;
-        /*Get the two elements you want to compare,
-        one from current row and one from the next:*/
-        x = rows[i].getElementsByTagName("TD")[n];
-        y = rows[i + 1].getElementsByTagName("TD")[n];
+
+        x = rows[i].cells[n]; //rows[i].getElementsByTagName("TD")[n];
+        y = rows[i + 1].cells[n];; //rows[i + 1].getElementsByTagName("TD")[n];
 
         let col1 = isNaN(parseInt(x.innerHTML)) ? x.innerHTML.toLowerCase() : parseInt(x.innerHTML);
         let col2 = isNaN(parseInt(y.innerHTML)) ? y.innerHTML.toLowerCase() : parseInt(y.innerHTML);
